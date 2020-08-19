@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import axios from "axios"
-
+import Home from './Home'
 
 
 class HomeContainer extends Component {
@@ -15,13 +15,11 @@ class HomeContainer extends Component {
     render() {
 
         return (
-           <div>
-
-           </div>
+            <Home/>
         );
     }
 
-    
+
 }
 
 //map state to props
@@ -36,7 +34,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
 
-      
+
     };
 }
+// export default connect(mapStateToProps, mapDispatchToProps)(HomeContainer);
 export default connect(mapStateToProps, mapDispatchToProps)(HomeContainer);
