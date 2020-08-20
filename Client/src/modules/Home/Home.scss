@@ -36,3 +36,15 @@ background-color: #1180F1 !important;
     }
     text-transform: none !important;
 }
+
+.login-form{
+    width: 600px;
+    .form-item{
+        width: 100% !important;
+        display: block;
+    }
+    input{
+        width: 600px;
+    }
+}
+

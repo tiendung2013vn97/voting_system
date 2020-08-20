@@ -1,6 +1,6 @@
 import './PageNotFound.scss'
 import React, { Component } from 'react'
-import BackgroundHome from '../../assets/imgs/background.jpg'
+import BackgroundHome from '../../assets/imgs/bg1.jpg'
 
 class PageNotFound extends Component{
 

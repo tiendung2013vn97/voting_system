@@ -1,0 +1,16 @@
+.pending-container{
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    background-color: rgba(0, 0, 1, 0.8);
+    z-index: 99999;
+    font-family: 'Opens Sans';
+    top:0px;
+  
+    .loader {
+      border-top: 16px solid blue;
+      border-bottom: 16px solid blue;
+    }
+  }
+  
+ 
