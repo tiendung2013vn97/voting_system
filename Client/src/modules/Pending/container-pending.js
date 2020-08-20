@@ -7,10 +7,14 @@ class PendingContainer extends Component {
 
   //render
   render() {
-    let display=this.props.home.pending?"block":"none"
+    let display = this.props.home.pending ? "block" : "none"
     return (
       <div className='pending-container' style={{display}}>
-        <div className="loader"></div>
+        <div className="waiting-container">
+          <div className="loader"></div>
+          <div className="waiting-text">Waiting...</div>
+        </div>
+
       </div>
 
     );

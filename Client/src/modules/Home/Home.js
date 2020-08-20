@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
-import { Grid, Button, TextField } from '@material-ui/core'
+import { Grid, Button, TextField, Select, MenuItem } from '@material-ui/core'
 import FacebookIcon from '@material-ui/icons/Facebook';
 import InfoIcon from '@material-ui/icons/Info';
 import InstagramIcon from '@material-ui/icons/Instagram';
@@ -24,36 +24,82 @@ const loginStyles = {
   }
 }
 
+const createAccountStyles = {
+  content: {
+    top: '30%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+  }
+}
+
 class Home extends Component {
 
   //constructor
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false
+      showLoginModal: false,
+      showCreateAccountModal: false,
+      gender: "Male"
     };
 
-    this.handleOpenModal = this.handleOpenModal.bind(this);
-    this.handleCloseModal = this.handleCloseModal.bind(this);
-    this.handleLogin=this.handleLogin.bind(this)
+    this.handleOpenLoginModal = this.handleOpenLoginModal.bind(this);
+    this.handleCloseLoginModal = this.handleCloseLoginModal.bind(this);
+    this.handleOpenCreateAccountModal = this.handleOpenCreateAccountModal.bind(this);
+    this.handleCloseCreateAccountModal = this.handleCloseCreateAccountModal.bind(this);
+    this.handleLogin = this.handleLogin.bind(this)
+    this.handleCreateAccount = this.handleCreateAccount.bind(this)
+    this.handleGenderChange = this.handleGenderChange.bind(this)
   }
 
 
-  handleOpenModal() {
-    this.setState({ ...this.state,showModal: true });
+  handleOpenLoginModal() {
+    this.setState({ ...this.state, showLoginModal: true });
   }
 
-  handleCloseModal() {
-    this.setState({ ...this.state,showModal: false });
+  handleCloseLoginModal() {
+    this.setState({ ...this.state, showLoginModal: false });
   }
 
-  handleLogin(){
-    let userId=document.getElementById("userid").value
-    let privateKey=document.getElementById("private-key").value
-    this.props.login({userId,privateKey})
-    this.setState({ ...this.state,showModal: false });
+  handleLogin() {
+    let userId = document.getElementById("userid").value
+    let privateKey = document.getElementById("private-key").value
+    this.props.login({ userId, privateKey })
+    this.setState({ ...this.state, showLoginModal: false });
   }
 
+  handleOpenCreateAccountModal() {
+    this.setState({ ...this.state, showCreateAccountModal: true });
+  }
+
+  handleCreateAccount() {
+    let userId = document.getElementById("c-userid").value
+    let name = document.getElementById("c-name").value
+    let age = document.getElementById("c-age").value
+    let gender = document.getElementById("c-gender").textContent
+    this.props.createAccount({ userId, name, age, gender })
+  }
+
+  handleCloseCreateAccountModal() {
+    this.setState({ ...this.state, showCreateAccountModal: false });
+  }
+
+  handleGenderChange(event) {
+    this.setState({ ...this.state, gender: event.target.value })
+  }
+
+  clearFormLogin() {
+    document.getElementById("userid").value = ''
+    document.getElementById("private-key").value = ''
+  }
+
+  clearFormCreateAccount() {
+    document.getElementById("c-userid").value = ''
+    document.getElementById("c-name").value = ''
+  }
   //render
   render() {
     var items = [
@@ -84,7 +130,7 @@ class Home extends Component {
             </Grid>
           </Grid>
           <Grid item xs={2} >
-            <Button style={{ float: "right" }} variant="contained" color="primary" onClick={this.handleOpenModal}>
+            <Button style={{ float: "right" }} variant="contained" color="primary" onClick={this.handleOpenLoginModal}>
               Login
             </Button>
           </Grid>
@@ -102,7 +148,7 @@ class Home extends Component {
               <b>Trustworthy </b>and <b>public</b> with everyone!
             </div>
 
-            <Button variant="contained" color="primary" className="create-account-btn">
+            <Button variant="contained" color="primary" className="create-account-btn" onClick={this.handleOpenCreateAccountModal}>
               Create a FREE account !
             </Button>
           </Grid>
@@ -117,7 +163,7 @@ class Home extends Component {
 
 
         <ReactModal
-          isOpen={this.state.showModal}
+          isOpen={this.state.showLoginModal}
           style={loginStyles}
         >
           <form className="login-form" noValidate autoComplete="off">
@@ -126,16 +172,44 @@ class Home extends Component {
             <TextField required={true} className="form-item" id="private-key" label="Private key" />
             <br />
             <div>
-              <Button style={{ marginTop: 20, float: "left" }} variant="contained" color="secondary" onClick={this.handleCloseModal}>Close</Button>
+              <Button style={{ marginTop: 20, float: "left" }} variant="contained" color="secondary" onClick={this.handleCloseLoginModal}>Close</Button>
               <Button style={{ marginTop: 20, float: "right" }} variant="contained" color="primary" onClick={this.handleLogin} >Login</Button>
             </div>
 
           </form>
-
-
-
         </ReactModal>
 
+
+        <ReactModal
+          isOpen={this.state.showCreateAccountModal}
+          style={createAccountStyles}
+        >
+          <form className="create-account-form" noValidate autoComplete="off">
+            <TextField required={true} className="form-item" id="c-userid" label="User ID" />
+            <br />
+            <TextField required={true} className="form-item" id="c-name" label="Name" />
+            <br />
+            <TextField required={true} className="form-item" id="c-age" label="Age" type="number" />
+            <br />
+
+            <span style={{ marginRight: 10 }}>Gender: </span>
+            <Select
+              labelId="gender"
+              id="c-gender"
+              value={this.state.gender}
+              onChange={this.handleGenderChange}
+            >
+              <MenuItem value={"Male"}>Male</MenuItem>
+              <MenuItem value={"Female"}>Female</MenuItem>
+            </Select>
+
+            <div>
+              <Button style={{ marginTop: 20, float: "left" }} variant="contained" color="secondary" onClick={this.handleCloseCreateAccountModal}>Close</Button>
+              <Button style={{ marginTop: 20, float: "right" }} variant="contained" color="primary" onClick={this.handleCreateAccount} >Create</Button>
+            </div>
+
+          </form>
+        </ReactModal>
 
       </div>
     );

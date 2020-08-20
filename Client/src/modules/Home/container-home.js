@@ -8,7 +8,7 @@ import {
     showSuccessNotify,
     showFailNotify
 } from "../Notify/action-notify";
-import { updateUser,pending } from "./action-home";
+import { updateUser, pending } from "./action-home";
 
 class HomeContainer extends Component {
 
@@ -16,6 +16,8 @@ class HomeContainer extends Component {
     constructor(props) {
         super(props);
         this.login = this.login.bind(this);
+        this.createAccount=this.createAccount.bind(this)
+        this.child = React.createRef()
     }
 
     //render
@@ -23,7 +25,10 @@ class HomeContainer extends Component {
 
         return (
             <Home
-                login={this.login} home={this.props.home}/>
+                login={this.login}
+                home={this.props.home}
+                createAccount={this.createAccount}
+                ref={this.child} />
         );
     }
 
@@ -31,9 +36,7 @@ class HomeContainer extends Component {
         this.props.pending(true)
         const api = axios.create({ baseURL: config.URL });
         api
-            .post("api/user/login", userLogin, {
-                withCredentials: true
-            })
+            .post("api/user/login", userLogin)
             .then(res => {
                 console.log(res);
                 if (res.data.status === "fail") {
@@ -52,6 +55,7 @@ class HomeContainer extends Component {
                 localStorage.setItem("user", JSON.stringify(user));
                 this.props.pending(false)
                 this.props.history.push("/");
+                this.child.current.clearFormLogin()
                 // if (this.props.location.state) {
                 //     this.props.history.push(this.props.location.state.from.pathname);
                 // } else {
@@ -65,12 +69,47 @@ class HomeContainer extends Component {
     }
 
 
+    createAccount(userCreate) {
+        this.props.pending(true)
+        const api = axios.create({ baseURL: config.URL });
+        api
+            .post("api/user", userCreate)
+            .then(res => {
+                console.log(res);
+                if (res.data.status === "fail") {
+                    switch (res.data.code) {
+                        case "USERID_EXIST": {
+                            this.props.showFailNotify("User ID existed! Please choose another User ID!");
+                            return
+                        }
+                        default: {
+                            this.props.showFailNotify(res.data.msg);                            
+                            break;
+                        }
+                    }
+                    return;
+                }
+
+                let user = res.data.result;
+
+                this.props.showSuccessNotify("Create account successfully!\n Please keep your private-key below for later login: ")
+                this.child.current.handleCloseCreateAccountModal()
+                this.props.pending(false)
+                this.child.current.clearFormCreateAccount()
+
+            })
+            .catch(err => {
+                this.props.pending(false)
+                this.props.showAlertNotify("An error has happened when login:\n" + err);
+            });
+    }
+
 }
 
 //map state to props
 function mapStateToProps(state) {
     return {
-        home:state.home
+        home: state.home
     };
 
 }
@@ -97,7 +136,7 @@ function mapDispatchToProps(dispatch) {
             return dispatch(updateUser(user));
         },
 
-        pending(state){
+        pending(state) {
             return dispatch(pending(state));
         }
     };
