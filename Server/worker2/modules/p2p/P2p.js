@@ -16,6 +16,7 @@ class PeerToPeer {
   constructor(blockchain) {
     this.peers = [];
     this.blockchain = blockchain;
+    this.updating = false
   }
 
   startServer(port) {
@@ -90,6 +91,7 @@ class PeerToPeer {
   }
 
   handleMessage(peer, message) {
+    const thiz = this
     switch (message.type) {
       case REQUEST_LATEST_BLOCK:
         this.write(peer, Messages.sendLatestBlock(this.blockchain.latestBlock));
@@ -98,34 +100,46 @@ class PeerToPeer {
         this.write(peer, Messages.sendBlockchain(this.blockchain.get()));
         break;
       case RECEIVE_LATEST_BLOCK:
+        console.log("Receive latest block:", message.data.index)
+        if (this.updating) return setTimeout(() => { thiz.handleMessage(peer, message) }, 500)
+        this.updating = true
         this.handleReceivedLatestBlock(message, peer);
+        this.updating = false
         break;
       case RECEIVE_BLOCKCHAIN:
+        console.log("Receive new blockchain:", message.data.length)
+        if (this.updating) return setTimeout(() => { thiz.handleMessage(peer, message) }, 500)
+        this.updating = true
         this.handleReceivedBlockchain(message, peer);
+        this.updating = false
         break;
       case MINE_BLOCK:
-        this.handleMineBlock(message, peer);
+        if (this.updating) return setTimeout(() => { thiz.handleMessage(peer, message) }, 500)
+        this.updating = true
+        this.handleMineBlock(message);
+        this.updating = false
         break;
       default:
         console.log("ERROR: Received invalid message.")
     }
   }
 
-  handleMineBlock(message, peer) {
+  handleMineBlock(message) {
+    const thiz=this
     let data = message.data
     try {
       this.blockchain.mine(data);
-      this.write(peer, Messages.sendLatestBlock(this.blockchain.latestBlock))
+      this.peers.forEach(p => { thiz.write(p, Messages.sendLatestBlock(thiz.blockchain.latestBlock)) })
       console.log("INFO: Mined block successfully!")
     } catch (error) {
       console.log("ERROR: Mined block failed!:", error)
     }
-
   }
 
   handleReceivedLatestBlock(message, peer) {
     const receivedBlock = message.data;
     const latestBlock = this.blockchain.latestBlock;
+    const thiz = this
 
     if (latestBlock.hash === receivedBlock.previousHash) {
       try {
@@ -133,7 +147,7 @@ class PeerToPeer {
       } catch (err) {
         console.log("ERROR: Add block fail!:", err)
       }
-      this.write(peer, Messages.sendLatestBlock(this.blockchain.latestBlock))
+      this.peers.forEach(p => { thiz.write(p, Messages.sendLatestBlock(thiz.blockchain.latestBlock)) })
     } else if (receivedBlock.index > latestBlock.index) {
       this.write(peer, Messages.getBlockchain());
     } else {
@@ -141,12 +155,13 @@ class PeerToPeer {
     }
   }
 
-  handleReceivedBlockchain(message, peer) {
+  handleReceivedBlockchain(message) {
     const receivedChain = message.data;
+    const thiz = this
 
     try {
       this.blockchain.replaceChain(receivedChain);
-      this.write(peer, Messages.sendBlockchain(this.blockchain.get()))
+      this.peers.forEach(p => { thiz.write(p, Messages.sendLatestBlock(thiz.blockchain.latestBlock)) })
     } catch (err) {
       console.log("ERROR: Replace chain fail!:", err)
     }

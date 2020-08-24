@@ -106,10 +106,12 @@ class PeerToPeer {
         this.write(peer, Messages.sendBlockchain(this.blockchain.get()));
         break;
       case RECEIVE_LATEST_BLOCK:
+        console.log("Receive latest block->block.index:", message.data.index)
         this.handleReceivedLatestBlock(message, peer);
         break;
       case RECEIVE_BLOCKCHAIN:
-        this.handleReceivedBlockchain(message, peer);
+        console.log("Receive new blockchain->block length:", message.data.length)
+        this.handleReceivedBlockchain(message);
         break;
       default:
         console.log("ERROR: Received invalid message.")
@@ -119,6 +121,7 @@ class PeerToPeer {
   handleReceivedLatestBlock(message, peer) {
     const receivedBlock = message.data;
     const latestBlock = this.blockchain.latestBlock;
+    const thiz = this
 
     if (latestBlock.hash === receivedBlock.previousHash) {
       try {
@@ -126,7 +129,10 @@ class PeerToPeer {
       } catch (err) {
         console.log("ERROR: Add block fail!:", err)
       }
-      this.write(peer, Messages.sendLatestBlock(this.blockchain.latestBlock))
+
+      console.log("Send latest block after add->index:", this.blockchain.latestBlock.index)
+      this.peers.forEach(p => { thiz.write(p, Messages.sendLatestBlock(thiz.blockchain.latestBlock)) })
+
     } else if (receivedBlock.index > latestBlock.index) {
       this.write(peer, Messages.getBlockchain());
     } else {
@@ -134,12 +140,14 @@ class PeerToPeer {
     }
   }
 
-  handleReceivedBlockchain(message, peer) {
+  handleReceivedBlockchain(message) {
     const receivedChain = message.data;
+    const thiz = this
 
     try {
       this.blockchain.replaceChain(receivedChain);
-      this.write(peer, Messages.sendBlockchain(this.blockchain.get()))
+      console.log("Send latest block after replace blockchain->index:" + this.blockchain.latestBlock.index)
+      this.peers.forEach(p => { thiz.write(p, Messages.sendLatestBlock(thiz.blockchain.latestBlock)) })
     } catch (err) {
       console.log("ERROR: Replace chain fail!:", err)
     }
