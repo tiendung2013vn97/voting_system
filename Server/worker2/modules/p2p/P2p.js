@@ -8,6 +8,7 @@ const {
   RECEIVE_LATEST_BLOCK,
   REQUEST_BLOCKCHAIN,
   RECEIVE_BLOCKCHAIN,
+  MINE_BLOCK
 } = messageType;
 const Messages = require("./Messages.js");
 
@@ -17,29 +18,20 @@ class PeerToPeer {
     this.blockchain = blockchain;
   }
 
-  // startServer(port) {
-  //   const server = net
-  //     .createServer(socket =>
-  //       p2p.accept(socket, (err, conn) => {
-  //         if (err) {
-  //           throw err;
-  //         } else {
-  //           this.initConnection.call(this, conn);
-  //         }
-  //       })
-  //     )
-  //     .listen(port);
-  // }
-
-  // discoverPeers() {
-  //   p2p.getNewPeer((err, conn) => {
-  //     if (err) {
-  //       throw err;
-  //     } else {
-  //       this.initConnection.call(this, conn);
-  //     }
-  //   });
-  // }
+  startServer(port) {
+    const server = net
+      .createServer(socket =>
+        p2p.accept(socket, (err, conn) => {
+          if (err) {
+            console.log(`ERROR: Connect to peer failed!`)
+          } else {
+            console.log(`INFO: Connect to peer successfully!`)
+            this.initConnection.call(this, conn);
+          }
+        })
+      )
+      .listen(port);
+  }
 
   connectToPeer(host, port) {
     const socket = net.connect(port, host, () =>
@@ -111,9 +103,24 @@ class PeerToPeer {
       case RECEIVE_BLOCKCHAIN:
         this.handleReceivedBlockchain(message, peer);
         break;
+      case MINE_BLOCK:
+        this.handleMineBlock(message, peer);
+        break;
       default:
         console.log("ERROR: Received invalid message.")
     }
+  }
+
+  handleMineBlock(message, peer) {
+    let data = message.data
+    try {
+      this.blockchain.mine(data);
+      this.write(peer, Messages.sendLatestBlock(this.blockchain.latestBlock))
+      console.log("INFO: Mined block successfully!")
+    } catch (error) {
+      console.log("ERROR: Mined block failed!:", error)
+    }
+
   }
 
   handleReceivedLatestBlock(message, peer) {

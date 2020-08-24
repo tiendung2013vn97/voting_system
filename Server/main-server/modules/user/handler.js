@@ -1,7 +1,7 @@
 const blockChain = require("../blockchain")
 const jwt = require('jsonwebtoken')
 
-const keypair = require('../vote/node_modules/keypair');
+const keypair = require('keypair');
 const p2p = require("../p2p")
 
 
@@ -30,24 +30,25 @@ const createUser = async (user) => {
 
         var pair = keypair();
         let data = {
-            encodeData: jwt.sign({ user, type: "INIT_USER" }, privateKey, { algorithm: 'RS256' }),
+            encodeData: jwt.sign({ user, type: "INIT_USER" }, pair.private, { algorithm: 'RS256' }),
             publicKey: pair.public
         }
 
         p2p.broadcastMineBlock(data)
 
         await waitAddUser(user.userId)
-        Promise.resolve({
+        return Promise.resolve({
             privateKey: pair.private
         })
     } catch (error) {
-        Promise.reject(error)
+        console.log(error)
+        return Promise.reject(error)
     }
 }
 
 const login = async (user) => {
     try {
-        let userExist = isUserIdExist(user.userId)
+        let userExist = await isUserIdExist(user.userId)
         if (!userExist) {
             return Promise.reject(`UserId ${user.userId} doesn't exist!`)
         }
@@ -57,8 +58,10 @@ const login = async (user) => {
             return Promise.reject(`Private key is wrong. Please try again!`)
         }
 
-        return Promise.resolve({ publicKey })
+        let userRes = getUser(user.userId)
+        return Promise.resolve({user: userRes })
     } catch (error) {
+        console.log(error)
         return Promise.reject(error)
     }
 }
@@ -68,7 +71,7 @@ const getPublicKey = (userId) => {
     for (index = 1; index < blocks.length; index++) {
         let decodeData = jwt.decode(blocks[index].data.encodeData)
         if (userId == decodeData.user.userId) {
-            blocks[index].data.publicKey
+            return blocks[index].data.publicKey
         }
     }
 }
@@ -114,11 +117,12 @@ const waitAddUser = (userId) => {
 const getUser = (userId) => {
     const blocks = blockChain.get()
     let user = null
-    blocks.forEach(block => {
+    blocks.forEach((block,index) => {
+        if(!index) return
         let decodeData = jwt.decode(block.data.encodeData)
-        if (decodeData.user.userId == userId && decodeData.type == "INIT_USER") {
+        if (decodeData && decodeData.user.userId == userId && decodeData.type == "INIT_USER") {
             user = decodeData.user
-            user.publicKey = block.publicKey
+            user.publicKey = block.data.publicKey
         }
     })
 

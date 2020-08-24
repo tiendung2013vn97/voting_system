@@ -1,6 +1,7 @@
-module.exports = (msg)=>{
+module.exports = (msg) => {
+    console.log("msg:", msg)
     return {
         status: 'fail',
-        result: msg
+        error: msg + ""
     }
 }

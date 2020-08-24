@@ -10,7 +10,7 @@ const fail = require('../response/fail')
 router.get("/", (req, res, next) => {
     return handler.getVotes(req.body.userId)
         .then(val => res.json(suc(val)))
-        .catch(err => res.json(fail(err + "")))
+        .catch(err => res.json(fail(err )))
 })
 
 /**
@@ -20,7 +20,17 @@ router.post("/", (req, res, next) => {
     let { userId, privateKey, vote } = { ...req.body }
     return handler.createVote(userId, privateKey, vote)
         .then(val => res.json(suc(val)))
-        .catch(err => res.json(fail(err + "")))
+        .catch(err => res.json(fail(err )))
+})
+
+/**
+ * Vote
+ */
+router.post("/elect", (req, res, next) => {
+    let { userId, privateKey, vote } = { ...req.body }
+    return handler.vote(userId, privateKey, vote)
+        .then(val => res.json(suc(val)))
+        .catch(err => res.json(fail(err )))
 })
 
 
