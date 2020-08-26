@@ -6,12 +6,12 @@ export const ProtectedLoginRoute = ({ component: Component, ...rest }) => {
 		<Route
 			{...rest}
 			render={props => {
-				if (localStorage.getItem("isLogged")) {
+				if (localStorage.getItem("user")) {
 					return <Component {...props} />;
 				} else {
 					return <Redirect to={
 						{
-							pathname: "/sign-in",
+							pathname: "/",
 							state: {
 								from: props.location
 							}

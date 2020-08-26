@@ -1,27 +1,30 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
+import axios from "axios"
 import { showAlertNotify, showSuccessNotify, showFailNotify } from '../../Notify/action-notify'
-import {updateAccountInfo} from '../action-account'
+import VoteCreate from './VoteCreate'
 
 
-class SignInContainer extends Component {   
+class VoteCreateContainer extends Component {
 
-    componentDidMount(){
-        let user=localStorage.getItem('user');
-        if(user){
-            this.props.updateAccountInfo(JSON.parse(user));
-        }
+    //constructor
+    constructor(props) {
+        super(props);
     }
 
     //render
     render() {
 
         return (
-           <div></div>
+           <VoteCreate
+           handleCreateVote={this.props.handleCreateVote}
+           handleCloseCreateModal={this.props.handleCloseCreateModal}
+           showAlertNotify={this.props.showAlertNotify}
+           />
         );
     }
 
-    
+
 }
 
 //map state to props
@@ -49,11 +52,7 @@ function mapDispatchToProps(dispatch) {
         //show alert dialog
         showSuccessNotify(msg) {
             return dispatch(showSuccessNotify(msg));
-        },
-
-        updateAccountInfo(info){
-            return dispatch(updateAccountInfo(info));
         }
     };
 }
-export default connect(mapStateToProps, mapDispatchToProps)(SignInContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(VoteCreateContainer);

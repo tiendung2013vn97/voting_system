@@ -40,6 +40,7 @@ class Home extends Component {
   //constructor
   constructor(props) {
     super(props);
+
     this.state = {
       showLoginModal: false,
       showCreateAccountModal: false,
@@ -53,6 +54,8 @@ class Home extends Component {
     this.handleLogin = this.handleLogin.bind(this)
     this.handleCreateAccount = this.handleCreateAccount.bind(this)
     this.handleGenderChange = this.handleGenderChange.bind(this)
+
+  
   }
 
 
@@ -67,6 +70,7 @@ class Home extends Component {
   handleLogin() {
     let userId = document.getElementById("userid").value
     let privateKey = document.getElementById("private-key").value
+    // privateKey=JSON.stringify(privateKey)
     this.props.login({ userId, privateKey })
     this.setState({ ...this.state, showLoginModal: false });
   }
@@ -92,13 +96,13 @@ class Home extends Component {
   }
 
   clearFormLogin() {
-    document.getElementById("userid").value = ''
-    document.getElementById("private-key").value = ''
+    // document.getElementById("userid").value = ''
+    // document.getElementById("private-key").value = ''
   }
 
   clearFormCreateAccount() {
-    document.getElementById("c-userid").value = ''
-    document.getElementById("c-name").value = ''
+    // document.getElementById("c-userid").value = ''
+    // document.getElementById("c-name").value = ''
   }
   //render
   render() {
@@ -169,7 +173,7 @@ class Home extends Component {
           <form className="login-form" noValidate autoComplete="off">
             <TextField required={true} className="form-item" id="userid" label="User ID" />
             <br />
-            <TextField required={true} className="form-item" id="private-key" label="Private key" />
+            <TextField required={true} className="form-item" id="private-key" label="Private key" multiline={true} />
             <br />
             <div>
               <Button style={{ marginTop: 20, float: "left" }} variant="contained" color="secondary" onClick={this.handleCloseLoginModal}>Close</Button>

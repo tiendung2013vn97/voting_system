@@ -46,6 +46,11 @@ background-color: #1180F1 !important;
     input{
         width: 600px;
     }
+    textarea{
+        width: 600px;
+        max-height: 200px !important;
+        overflow: auto !important;
+    }
 }
 
 

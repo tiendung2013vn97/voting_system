@@ -18,7 +18,7 @@
   .main-dialog{
     position: absolute;
     left: 50%;
-    width: 300px;
+    min-width: 300px;
     height: max-content;
     border-radius: 2px;
     top:200px;

@@ -9,6 +9,7 @@ import {
     showFailNotify
 } from "../Notify/action-notify";
 import { updateUser, pending } from "./action-home";
+import { withRouter } from 'react-router';
 
 class HomeContainer extends Component {
 
@@ -16,8 +17,13 @@ class HomeContainer extends Component {
     constructor(props) {
         super(props);
         this.login = this.login.bind(this);
-        this.createAccount=this.createAccount.bind(this)
+        this.createAccount = this.createAccount.bind(this)
         this.child = React.createRef()
+
+        if(localStorage.getItem("user")){
+            this.props.history.push('/votes');
+        }
+       
     }
 
     //render
@@ -46,21 +52,17 @@ class HomeContainer extends Component {
                             break;
                         }
                     }
+                    this.props.pending(false)
                     return;
                 }
 
-                let user = res.data.result;
+                let user = res.data.result.user;
                 this.props.updateUser(user);
-                localStorage.setItem("isLogged", "true");
                 localStorage.setItem("user", JSON.stringify(user));
                 this.props.pending(false)
-                this.props.history.push("/");
                 this.child.current.clearFormLogin()
-                // if (this.props.location.state) {
-                //     this.props.history.push(this.props.location.state.from.pathname);
-                // } else {
-                //     this.props.history.push("/");
-                // }
+                this.props.history.push("/votes");
+               
             })
             .catch(err => {
                 this.props.pending(false)
@@ -78,27 +80,24 @@ class HomeContainer extends Component {
                 console.log(res);
                 if (res.data.status === "fail") {
                     switch (res.data.code) {
-                        case "USERID_EXIST": {
-                            this.props.showFailNotify("User ID existed! Please choose another User ID!");
-                            return
-                        }
                         default: {
-                            this.props.showFailNotify(res.data.msg);                            
+                            this.props.showFailNotify(res.data.msg);
                             break;
                         }
                     }
+
+                    this.props.pending(false)
                     return;
-                }
+                }               
 
-                let user = res.data.result;
-
-                this.props.showSuccessNotify("Create account successfully!\n Please keep your private-key below for later login: ")
+                this.props.showSuccessNotify("Create account successfully!\nPlease keep your private-key below for later login:\n" + res.data.result.privateKey)
                 this.child.current.handleCloseCreateAccountModal()
                 this.props.pending(false)
                 this.child.current.clearFormCreateAccount()
 
             })
             .catch(err => {
+                console.log(err)
                 this.props.pending(false)
                 this.props.showAlertNotify("An error has happened when login:\n" + err);
             });
@@ -144,4 +143,4 @@ function mapDispatchToProps(dispatch) {
 };
 
 // export default connect(mapStateToProps, mapDispatchToProps)(HomeContainer);
-export default connect(mapStateToProps, mapDispatchToProps)(HomeContainer);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(HomeContainer));

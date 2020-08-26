@@ -15,6 +15,10 @@ const createUser = async (user) => {
             return Promise.reject(`UserId is required!`)
         }
 
+        if (!user.name) {
+            return Promise.reject(`Name is required!`)
+        }
+
         if (!user.age) {
             return Promise.reject(`Age is required!`)
         }

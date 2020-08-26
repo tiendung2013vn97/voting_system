@@ -8,6 +8,7 @@ const fail = require('../response/fail')
  * User Login
  */
 router.post("/login", (req, res, next) => {
+    console.log(req.body.privateKey)
     return handler.login(req.body)
         .then(val => res.json(suc(val)))
         .catch(err => res.json(fail(err)))
