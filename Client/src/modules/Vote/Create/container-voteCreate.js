@@ -3,6 +3,8 @@ import { connect } from 'react-redux'
 import axios from "axios"
 import { showAlertNotify, showSuccessNotify, showFailNotify } from '../../Notify/action-notify'
 import VoteCreate from './VoteCreate'
+import config from "../../../config";
+import { pending } from '../../Home/action-home'
 
 
 class VoteCreateContainer extends Component {
@@ -16,14 +18,42 @@ class VoteCreateContainer extends Component {
     render() {
 
         return (
-           <VoteCreate
-           handleCreateVote={this.props.handleCreateVote}
-           handleCloseCreateModal={this.props.handleCloseCreateModal}
-           showAlertNotify={this.props.showAlertNotify}
-           />
+            <VoteCreate
+                handleCreateVote={this.createVote.bind(this)}
+                handleCloseCreateModal={this.props.handleCloseCreateModal}
+                showAlertNotify={this.props.showAlertNotify}
+            />
         );
     }
 
+
+    createVote(vote) {
+        this.props.pending(true)
+        const api = axios.create({ baseURL: config.URL });
+        api
+            .post("api/votes", vote)
+            .then(res => {
+                console.log(res);
+                if (res.data.status === "fail") {
+                    switch (res.data.code) {
+                        default: {
+                            this.props.showFailNotify(res.data.msg);
+                            break;
+                        }
+                    }
+                    this.props.pending(false)
+                    return;
+                }
+
+                this.props.handleCloseCreateModal()
+                this.props.showSuccessNotify("Created vote successfully!")
+                this.props.pending(false)
+            })
+            .catch(err => {
+                this.props.pending(false)
+                this.props.showAlertNotify("An error has happened when login:\n" + err);
+            });
+    }
 
 }
 
@@ -52,6 +82,10 @@ function mapDispatchToProps(dispatch) {
         //show alert dialog
         showSuccessNotify(msg) {
             return dispatch(showSuccessNotify(msg));
+        },
+
+        pending(state) {
+            return dispatch(pending(state));
         }
     };
 }

@@ -34,34 +34,45 @@ class VoteCreate extends Component {
       <div>
         <form className="create-vote-form" noValidate autoComplete="off">
           <div className="form-container">
-            <TextField required={true} className="form-item" id="c-topic" label="Topic" />
-            <br />
-            <TextField
-              required={true}
-              id="from-date"
-              label="From Date"
-              type="datetime-local"
-              className="form-item"
-              // defaultValue="2017-05-24T10:30"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <br />
-            <TextField
-              required={true}
-              id="to-date"
-              label="To Date"
-              type="datetime-local"
-              className="form-item"
-              // defaultValue="2017-05-24T10:30"
-              InputLabelProps={{
-                shrink: true,
-              }}
-            />
-            <br />
-            <TextField required={true} className="form-item" id="c-content" label="Content" multiline={true} />
-            <br />
+            <Grid container>
+              <Grid item xs={12}>
+                <TextField required={true} className="form-item" id="c-topic" label="Topic" />
+              </Grid>
+            </Grid>
+
+            <TextField style={{ marginTop: "10px" }} required={true} className="form-item" id="c-content" label="Content" multiline={true} />
+
+            <Grid container className="input-date-container">
+              <Grid item xs={6}>
+                <TextField
+                  required={true}
+                  id="c-from-date"
+                  className="input-date"
+                  label="From Date"
+                  type="datetime-local"
+                  // defaultValue="2017-05-24T10:30"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+              <Grid item xs={6}>
+                <TextField
+                  required={true}
+                  id="c-to-date"
+                  label="To Date"
+                  className="input-date"
+                  type="datetime-local"
+                  // defaultValue="2017-05-24T10:30"
+                  InputLabelProps={{
+                    shrink: true,
+                  }}
+                />
+              </Grid>
+            </Grid>
+
+            <TextField style={{ marginBottom: "20px" }} required={true} className="form-item" id="in-private-key" label="Private key" multiline={true} />
+            <TextField style={{ marginBottom: "20px" }} required={true} className="form-item" id="in-voters" label="UserId who can vote this" />
 
             <div><b>Options:</b></div>
             {optionHtml}
@@ -91,18 +102,38 @@ class VoteCreate extends Component {
   }
 
   createVote() {
-    let topic = document.getElementById("c-topic")
-    let fromDate = document.getElementById("from-date");
-    let toDate = document.getElementById("from-date");
-    let content = document.getElementById("c-content")
+    let topic = document.getElementById("c-topic").value
+    let fromDate = new Date(document.getElementById("c-from-date").value).getTime()
+    let toDate = new Date(document.getElementById("c-to-date").value).getTime()
+    let content = document.getElementById("c-content").value
+    let privateKey = document.getElementById("in-private-key").value
+    let voters = document.getElementById("in-voters").value
+    let user = JSON.parse(localStorage.getItem("user"));
+    if (!topic) this.props.showAlertNotify("Topic is required!")
+    if (!fromDate) this.props.showAlertNotify("From date is required!")
+    if (!toDate) this.props.showAlertNotify("To date is required!")
+    if (!content) this.props.showAlertNotify("Content is required!")
+    if (!privateKey) this.props.showAlertNotify("Private key is required!")
+    if (!voters) this.props.showAlertNotify("Voters is required!")
+
+    voters=voters.trim();
+    if(voters.toLowerCase()!=="all"){
+      voters=voters.split(";");
+      if(!voters[voters.length-1]) voters.pop();
+    }
+  
+
     let options = []
     this.state.options.forEach(op => {
       let optionAtId = document.getElementById("option-" + op.id)
       options.push({ id: op.id, text: optionAtId.value })
     })
 
-
+  
+    const vote = { vote: { topic, fromDate, toDate, content, options,voters }, userId: user.userId, privateKey }
+    console.log("user",vote)
     this.setState({ ...this.state, options: [{ id: 1, text: "" }] })
+    this.props.handleCreateVote(vote)
   }
 
   close() {

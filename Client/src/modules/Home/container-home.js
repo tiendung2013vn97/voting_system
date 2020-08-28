@@ -20,10 +20,10 @@ class HomeContainer extends Component {
         this.createAccount = this.createAccount.bind(this)
         this.child = React.createRef()
 
-        if(localStorage.getItem("user")){
+        if (localStorage.getItem("user")) {
             this.props.history.push('/votes');
         }
-       
+
     }
 
     //render
@@ -56,13 +56,14 @@ class HomeContainer extends Component {
                     return;
                 }
 
+                this.child.current.handleCloseLoginModal();
                 let user = res.data.result.user;
                 this.props.updateUser(user);
                 localStorage.setItem("user", JSON.stringify(user));
                 this.props.pending(false)
                 this.child.current.clearFormLogin()
                 this.props.history.push("/votes");
-               
+
             })
             .catch(err => {
                 this.props.pending(false)
@@ -88,7 +89,7 @@ class HomeContainer extends Component {
 
                     this.props.pending(false)
                     return;
-                }               
+                }
 
                 this.props.showSuccessNotify("Create account successfully!\nPlease keep your private-key below for later login:\n" + res.data.result.privateKey)
                 this.child.current.handleCloseCreateAccountModal()

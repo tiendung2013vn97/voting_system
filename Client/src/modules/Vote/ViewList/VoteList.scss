@@ -108,19 +108,27 @@
         color:white;
         text-decoration: underline;
         text-align: center;
-        -webkit-animation: moveTopDown 0.3s ; 
-        animation: moveTopDown 0.3s ;
+        -webkit-animation: moveTopDown2 0.3s ; 
+        animation: moveTopDown2 0.3s ;
     }
 
-    @-webkit-keyframes moveTopDown {
+    @-webkit-keyframes moveTopDown2 {
         from {padding-top: 200px;}
         to {padding-top: 60px;}
       }
       
-      @keyframes moveTopDown {
+      @keyframes moveTopDown2 {
         from {padding-top: 200px;}
         to {padding-top: 60px;}
       }
+
+    .content-label{
+        font-weight: 500 !important;
+        font-size: 13px;
+        text-decoration: underline;
+        margin-bottom: 5px;
+        font-style: italic;
+    }
 
     .label{
         font-size: 13px;
@@ -142,6 +150,7 @@
         overflow: hidden;
         width: 90%;
         margin-left: 5%;
+    
 
     }
 }

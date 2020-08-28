@@ -7,6 +7,7 @@ import PendingContainer from './modules/Pending/container-pending'
 import { ProtectedLoginRoute } from './routes/ProtectedLoginRoute'
 import VoteListContainer from './modules/Vote/ViewList/container-voteList' 
 import NavBar from './modules/NavBar/NavBar'
+import VoteDetailContainer from './modules/Vote/ViewDetail/container-voteDetail'
 import './App.css'
 
 
@@ -21,6 +22,7 @@ class App extends Component {
           <Switch>
             <Route exact path='/' component={HomeContainer} />
             <ProtectedLoginRoute exact path="/votes" component={VoteListContainer}/>
+            <ProtectedLoginRoute path="/votes/:id" component={VoteDetailContainer}/>
             {/* <ProtectedLoginRoute exact path="/votes/:id"/> */}
             <Route path='*' component={PageNotFound} />
           </Switch>

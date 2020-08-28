@@ -72,7 +72,7 @@ class Home extends Component {
     let privateKey = document.getElementById("private-key").value
     // privateKey=JSON.stringify(privateKey)
     this.props.login({ userId, privateKey })
-    this.setState({ ...this.state, showLoginModal: false });
+    // this.setState({ ...this.state, showLoginModal: false });
   }
 
   handleOpenCreateAccountModal() {

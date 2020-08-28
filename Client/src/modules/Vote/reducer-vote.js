@@ -11,6 +11,12 @@ const voteReducer = (state = init, action) => {
                 votes: action.votes
             }
         }
+        case "LOG_OUT": {
+            return {
+                ...state,
+                votes: []
+            };
+        }
 
         default:
             {

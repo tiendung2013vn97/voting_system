@@ -23,6 +23,7 @@ const createVoteStyles = {
     bottom: 'auto',
     marginRight: '-50%',
     transform: 'translate(-50%, -50%)',
+    overflow: 'hidden'
   }
 }
 
@@ -36,13 +37,14 @@ class VoteList extends Component {
       openCreateVote: false
     }
 
-    this.handleCloseCreateModal=this.handleCloseCreateModal.bind(this)
-    this.handleCreateVote=this.handleCreateVote.bind(this)
+    this.handleCloseCreateModal = this.handleCloseCreateModal.bind(this)
+    this.handleCreateVote = this.handleCreateVote.bind(this)
   }
 
   //render
   render() {
 
+    const votes = this.props.votes
     let createVotePanel = []
     createVotePanel.push(
       <Grid item xs={4} className="card-create-vote-container" >
@@ -58,62 +60,76 @@ class VoteList extends Component {
       </Grid>
     )
 
-    let votePanel = []
-    votePanel.push(
-      <Grid item xs={4} className="card-vote-container" >
-        <Card className="card-vote" style={{ width: "90%" }}>
-          <CardContent className="card-content">
-            <Grid container>
-              <Grid item xs={12}>
-                <Grid container>
-                  <Grid item xs={3} className="small-account-container">
-                    <AccountCircleIcon style={{ fontSize: 50, color: "green" }} />
-                  </Grid>
-                  <Grid item xs={9}>
-                    <span className="label"> Topic:</span>
-                    <span className="label-text"> Bầu tổng thống</span>
-                    <div className="min-date"> From: 12/09/2020</div>
-                    <div className="min-date"> To: 12/10/2020</div>
-                  </Grid>
-                </Grid>
-                <Grid item xs={12} style={{ marginTop: 10 }} className="content">
-                  Mong thế giới ngày càng bình yên hơn nữa, chúng tôi ủng hộ  Mong thế giới ngày càng bình yên hơn nữa, chúng tôi ủng hộ Mong thế giới ngày càng bình yên hơn nữa, chúng tôi ủng hộ Mong thế giới ngày càng bình yên hơn nữa, chúng tôi ủng hộ Mong thế giới ngày càng bình yên hơn nữa, chúng tôi ủng hộ Mong thế giới ngày càng bình yên hơn nữa, chúng tôi ủng hộ Mong thế giới ngày càng bình yên hơn nữa, chúng tôi ủng hộ Mong thế giới ngày càng bình yên hơn nữa, chúng tôi ủng hộ asdasdasdasdasd
-                </Grid>
-
-              </Grid>
-            </Grid>
-          </CardContent>
-          <div className="view-detail">
-            <VisibilityIcon className="eye-icon" />
-            View Detail</div>
-        </Card>
-      </Grid>
-    )
-
     let votePanels = []
     votePanels.push(createVotePanel)
-    votePanels.push(votePanel)
-    votePanels.push(votePanel)
-    votePanels.push(votePanel)
-    votePanels.push(votePanel)
-    votePanels.push(votePanel)
-    votePanels.push(votePanel)
-    votePanels.push(votePanel)
-    votePanels.push(votePanel)
-    votePanels.push(votePanel)
+    votes.forEach(vote => {
+      let fDate = new Date(vote.vote.fromDate), tDate = new Date(vote.vote.toDate)
+
+      votePanels.push(
+        <Grid item xs={4} className="card-vote-container" >
+            <Link to={"/votes/"+vote.vote.voteId} style={{textDecoration:"none"}}>
+          <Card className="card-vote" style={{ width: "90%" }}>
+            <CardContent className="card-content">
+              <Grid container>
+                <Grid item xs={12}>
+                  <Grid container>
+                    <Grid item xs={3} className="small-account-container">
+                      <AccountCircleIcon style={{ fontSize: 50, color: "green" }} />
+                    </Grid>
+                    <Grid item xs={9}>
+                      <span className="label"> Topic:</span>
+                      <span className="label-text"> {vote.vote.topic}</span>
+                      <div className="min-date"> From: {formatDate(fDate)}</div>
+                      <div className="min-date"> To: {formatDate(tDate)}</div>
+                    </Grid>
+                  </Grid>
+
+                  <Grid item xs={12} style={{ marginTop: 10, marginLeft: "5%" }} >
+                    <div className="content-label">Content:</div>
+                  </Grid>
+
+                  <Grid item xs={12} style={{ marginTop: 10 }} className="content">
+                    {vote.vote.content}
+                  </Grid>
+
+                </Grid>
+              </Grid>
+            </CardContent>
+            <div className="view-detail">
+              <VisibilityIcon className="eye-icon" />
+              View Detail</div>
+          </Card>
+          </Link>
+        </Grid>
+      )
+    })
+
+
+
+    // votePanels.push(createVotePanel)
+    // votePanels.push(votePanel)
+    // votePanels.push(votePanel)
+    // votePanels.push(votePanel)
+    // votePanels.push(votePanel)
+    // votePanels.push(votePanel)
+    // votePanels.push(votePanel)
+    // votePanels.push(votePanel)
+    // votePanels.push(votePanel)
+    // votePanels.push(votePanel)
     return (
       <div>
         <Paper id="search-box" >
 
           <InputBase
             placeholder="Search your votes..."
+            id="search-text-box"
             inputProps={{ 'aria-label': 'search google maps' }}
           />
-          <IconButton type="submit" aria-label="search">
+          <IconButton type="submit" aria-label="search" onClick={this.onClickSearch.bind(this)} >
             <SearchIcon />
           </IconButton>
 
-          <Button id="btn-refresh">
+          <Button id="btn-refresh" onClick={this.onClickSearch.bind(this)}>
             <RefreshIcon />
           </Button>
 
@@ -140,6 +156,11 @@ class VoteList extends Component {
 
   }
 
+  onClickSearch() {
+    let text=document.getElementById("search-text-box")
+    this.props.getVotes(text.value)
+  }
+
   openCreateVote() {
     this.setState({ ...this.state, openCreateVote: true })
   }
@@ -153,6 +174,26 @@ class VoteList extends Component {
     this.setState({ ...this.state, openCreateVote: false })
   }
 
+}
+
+const formatDate = (d) => {
+  let date = ("0" + d.getDate())
+  date = date.slice(date.length - 2, date.length)
+
+  let month = ("0" + (d.getMonth() + 1))
+  month = month.slice(month.length - 2, month.length)
+
+  let yeer = d.getFullYear()
+  let hour = ("0" + d.getHours())
+  hour = hour.slice(hour.length - 2, hour.length)
+
+  let minute = ("0" + d.getMinutes())
+  minute = minute.slice(minute.length - 2, minute.length)
+
+  let second = ("0" + d.getSeconds())
+  second = second.slice(second.length - 2, second.length)
+
+  return `${date}/${month}/${yeer} ${hour}:${minute}:${second}`
 }
 
 export default VoteList;

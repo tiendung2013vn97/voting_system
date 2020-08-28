@@ -21,7 +21,7 @@ class Notify extends Component {
         <div className='title-green'>Success</div>
 
         <div className='message-content'>
-          {useTextArea ? <textarea style={{ width: "auto", minHeight: "200px" }}>{msg}</textarea> : { msg }}
+          {useTextArea ? <textarea style={{ width: "400px", minHeight: "200px" }}>{msg}</textarea> : msg }
 
         </div>
         <button className='btn-green' onClick={this.props.closeNotify}>

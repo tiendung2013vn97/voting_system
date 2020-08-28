@@ -12,6 +12,8 @@ class VoteListContainer extends Component {
     constructor(props) {
         super(props);
 
+        this.getVotes = this.getVotes.bind(this)
+        this.getVotes()
 
     }
 
@@ -19,45 +21,41 @@ class VoteListContainer extends Component {
     render() {
 
         return (
-            <VoteList 
+            <VoteList
                 votes={this.props.votes}
-                createVote={this.createVote.bind(this)}
+                getVotes={this.getVotes.bind(this)}
             />
         );
     }
 
-    getVotes() {
+    getVotes(text) {
+        const userId = JSON.parse(localStorage.getItem("user")).userId
         const api = axios.create({ baseURL: config.URL });
-        api
-            .get("api/votes")
-            .then(res => {
-                console.log(res);
-                if (res.data.status === "fail") {
-                    switch (res.data.code) {
-                        default: {
-                            this.props.showFailNotify(res.data.msg);
-                            break;
+        if (text) {
+            console.log("text",text)
+        } else {
+            api
+                .get("api/votes?userId=" + encodeURIComponent(userId))
+                .then(res => {
+                    console.log(res);
+                    if (res.data.status === "fail") {
+                        switch (res.data.code) {
+                            default: {
+                                this.props.showFailNotify(res.data.msg);
+                                break;
+                            }
                         }
+                        return;
                     }
-                    this.props.pending(false)
-                    return;
-                }
 
-                this.props.updateVotes(res.data.result)
-            })
-            .catch(err => {
-                this.props.pending(false)
-                this.props.showAlertNotify("An error has happened when login:\n" + err);
-            });
-    }
-
-
-    createVote(vote){
-        console.log("vote",vote)
+                    this.props.updateVotes(res.data.result)
+                })
+                .catch(err => {
+                    this.props.showAlertNotify("An error has happened when login:\n" + err);
+                });
+        }
 
     }
-
-
 }
 
 //map state to props

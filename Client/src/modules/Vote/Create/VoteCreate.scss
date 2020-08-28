@@ -1,14 +1,14 @@
 .create-vote-form{
     position: relative;
-    width: 500px;
+    width: 700px;
     .form-item{
         width: 100% !important;
         display: block;
     }
     input{
-        width: 400px;
+        width: 600px;
     }
-    height: 500px;
+    height: 600px;
 
     #btn-close{
         position: absolute;
@@ -21,25 +21,39 @@
         bottom: 0;
         right: 0;
     }
-}
+
+    .input-date input{
+        width: 250px !important;
+    }
+
+    .input-date-container{
+        margin-top: 20px;
+        margin-bottom: 20px;
+    }
 
 
-.form-container{
-    position: absolute;
-    max-height: 430px;
-    overflow: auto;
-    left: 50%;
-    transform: translate(-50%, 0%);
-    textarea{
-        width: 400px;
-        max-height: 200px !important;
-        overflow: auto !important;
+    .form-container{
+        position: absolute;
+        max-height: 530px;
+        overflow: auto;
+        left: 50%;
+        transform: translate(-50%, 0%);
+        width: 100%;
+        padding-left: 100px !important;
+        textarea{
+            width: 600px;
+            max-height: 100px !important;
+            overflow: auto !important;
+        }
     }
 }
 
+
+
+
 .btn-container{
     position: absolute;
-    width: 400px;
+    width: 650px;
     left: 50%;
     transform: translate(-50%, 0%);
     bottom: 10px;
