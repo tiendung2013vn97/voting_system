@@ -65,40 +65,51 @@ class VoteList extends Component {
     votes.forEach(vote => {
       let fDate = new Date(vote.vote.fromDate), tDate = new Date(vote.vote.toDate)
 
+      let status;
+      let progressColor;
+      if (vote.vote.toDate <= Date.now()) { status = "Finished"; progressColor = "green"; }
+      if (vote.vote.toDate > Date.now() & vote.vote.fromDate < Date.now()) {
+        status = "In progress"; progressColor = "orange";
+      }
+
       votePanels.push(
         <Grid item xs={4} className="card-vote-container" >
-            <Link to={"/votes/"+vote.vote.voteId} style={{textDecoration:"none"}}>
-          <Card className="card-vote" style={{ width: "90%" }}>
-            <CardContent className="card-content">
-              <Grid container>
-                <Grid item xs={12}>
-                  <Grid container>
-                    <Grid item xs={3} className="small-account-container">
-                      <AccountCircleIcon style={{ fontSize: 50, color: "green" }} />
+          <Link to={"/votes/" + vote.vote.voteId} style={{ textDecoration: "none" }}>
+            <Card className="card-vote" style={{ width: "90%" }}>
+              <CardContent className="card-content">
+                <Grid container>
+                  <Grid item xs={12}>
+                    <Grid container>
+                      <Grid item xs={3} className="small-account-container">
+                        <AccountCircleIcon style={{ fontSize: 50, color: "green" }} />
+                      </Grid>
+                      <Grid item xs={9}>
+                        <span className="label"> Topic:</span>
+                        <span className="label-text"> {vote.vote.topic}</span>
+                        <div className="min-date"> From: {formatDate(fDate)}</div>
+                        <div className="min-date"> To: {formatDate(tDate)}</div>
+                        <div className="status min-date">
+                          <span style={{ marginRight: "5px" }}>Status:</span>
+                          <span style={{ color: progressColor }}>{status}</span>
+                        </div>
+                      </Grid>
                     </Grid>
-                    <Grid item xs={9}>
-                      <span className="label"> Topic:</span>
-                      <span className="label-text"> {vote.vote.topic}</span>
-                      <div className="min-date"> From: {formatDate(fDate)}</div>
-                      <div className="min-date"> To: {formatDate(tDate)}</div>
+
+                    <Grid item xs={12} style={{ marginTop: 10, marginLeft: "5%" }} >
+                      <div className="content-label">Content:</div>
                     </Grid>
-                  </Grid>
 
-                  <Grid item xs={12} style={{ marginTop: 10, marginLeft: "5%" }} >
-                    <div className="content-label">Content:</div>
-                  </Grid>
+                    <Grid item xs={12} style={{ marginTop: 10 }} className="content">
+                      {vote.vote.content}
+                    </Grid>
 
-                  <Grid item xs={12} style={{ marginTop: 10 }} className="content">
-                    {vote.vote.content}
                   </Grid>
-
                 </Grid>
-              </Grid>
-            </CardContent>
-            <div className="view-detail">
-              <VisibilityIcon className="eye-icon" />
+              </CardContent>
+              <div className="view-detail">
+                <VisibilityIcon className="eye-icon" />
               View Detail</div>
-          </Card>
+            </Card>
           </Link>
         </Grid>
       )
@@ -157,7 +168,7 @@ class VoteList extends Component {
   }
 
   onClickSearch() {
-    let text=document.getElementById("search-text-box")
+    let text = document.getElementById("search-text-box")
     this.props.getVotes(text.value)
   }
 

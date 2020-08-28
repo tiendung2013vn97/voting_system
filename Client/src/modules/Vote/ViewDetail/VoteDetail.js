@@ -10,6 +10,8 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormLabel from '@material-ui/core/FormLabel';
+import ListIcon from '../../../assets/imgs/list.png'
+
 
 class VoteDetail extends Component {
 
@@ -41,18 +43,18 @@ class VoteDetail extends Component {
       let optionVoted = -1;
 
       allowVote = vote.vote.voters == "all" ? true : (vote.vote.voters.includes(userId) ? true : false)
-
       vote.vote.options.forEach(option => {
         totalVoted += option.voted.length
-        if (option.voted.map(v=>v.userId).includes(userId)) { 
-          optionVoted = option.id; allowVote = false }
+        if (option.voted.map(v => v.userId).includes(userId)) {
+          optionVoted = option.id; allowVote = false
+        }
       })
 
       if (vote.vote.toDate <= Date.now()) { status = "Finished"; progressColor = "green"; allowVote = false }
       if (vote.vote.toDate > Date.now() & vote.vote.fromDate < Date.now()) {
         status = "In progress"; progressColor = "orange";
-
       }
+
       if (vote.vote.fromDate > Date.now()) { status = "Not start"; progressColor = "grey"; allowVote = false }
       let voter = vote.vote.voters == "all" ? "All" : vote.vote.voters.join("; ")
 
@@ -193,11 +195,11 @@ class VoteDetail extends Component {
 
               {allowVote &&
                 <div>
-                  <TextField required={true} className="form-item" id="private-key" label="Private key" multiline={true} style={{width:"100%"}}/>
+                  <TextField required={true} className="form-item" id="private-key" label="Private key" multiline={true} style={{ width: "100%" }} />
                   <div style={{ width: "100%" }}>
-                    <Button color="primary" variant="contained" onClick={this.onClickVote.bind(this)} style={{marginTop:"10px"}}>
-                      Submit
-                   </Button>
+                    <Button color="primary" variant="contained" onClick={this.onClickVote.bind(this)} style={{ marginTop: "10px" }}>
+                      Vote
+                    </Button>
                   </div>
                 </div>}
 
@@ -213,6 +215,12 @@ class VoteDetail extends Component {
     return (
       <div className="vote-detail-container">
         {vote ? voteDetailHtml : vote404Html}
+
+        <Link to="/votes">
+        <Button className='btn-go-list'>
+          <img src={ListIcon}></img>
+        </Button>
+        </Link>
       </div>
     );
 

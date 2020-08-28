@@ -116,12 +116,12 @@ class VoteCreate extends Component {
     if (!privateKey) this.props.showAlertNotify("Private key is required!")
     if (!voters) this.props.showAlertNotify("Voters is required!")
 
-    voters=voters.trim();
-    if(voters.toLowerCase()!=="all"){
-      voters=voters.split(";");
-      if(!voters[voters.length-1]) voters.pop();
+    voters = voters.trim();
+    if (voters.toLowerCase() !== "all") {
+      voters = voters.split(/[;,]/).map(item => item.trim());
+      if (!voters[voters.length - 1]) voters.pop();
     }
-  
+
 
     let options = []
     this.state.options.forEach(op => {
@@ -129,14 +129,13 @@ class VoteCreate extends Component {
       options.push({ id: op.id, text: optionAtId.value })
     })
 
-  
-    const vote = { vote: { topic, fromDate, toDate, content, options,voters }, userId: user.userId, privateKey }
-    console.log("user",vote)
-    this.setState({ ...this.state, options: [{ id: 1, text: "" }] })
+
+    const vote = { vote: { topic, fromDate, toDate, content, options, voters }, userId: user.userId, privateKey }
     this.props.handleCreateVote(vote)
   }
 
   close() {
+    this.setState({ ...this.state, options: [{ id: 1, text: "" }] })
     this.props.handleCloseCreateModal()
     this.setState({ ...this.state, options: [{ id: 1, text: "" }] })
   }
@@ -152,6 +151,7 @@ class VoteCreate extends Component {
     options.pop()
     this.setState({ ...this.state, options: [...options] })
   }
+
 
 
 }

@@ -5,6 +5,11 @@ const keypair = require('keypair');
 const p2p = require("../p2p")
 
 const getVotes = async (userId) => {
+    let user = await userHandler.getUser(userId)
+    if (!user) {
+        return Promise.reject(`UserId ${userId} doesn't exist!`)
+    }
+
     let blocks = blockChain.get()
     let result = {}
     blocks.forEach((block, index) => {
@@ -51,6 +56,36 @@ const getVote = (voteId) => {
     })
 
     return result
+}
+
+const getVotesByText = async (text) => {
+    let blocks = blockChain.get()
+    let result = {}
+    blocks.forEach((block, index) => {
+        let decodeData = jwt.decode(block.data.encodeData)
+        if (decodeData.type != "CREATE_VOTE" && decodeData.type != "VOTE") return
+
+        let voteId = decodeData.vote.voteId
+        if (decodeData.vote && decodeData.vote.voteId == voteId) {
+            if (decodeData.type == "CREATE_VOTE") {
+                result[voteId] = { host: decodeData.user, vote: decodeData.vote }
+                result[voteId].vote.options.forEach(option => option.voted = [])
+            }
+
+            if (decodeData.type == "VOTE") {
+                let option = result[voteId].vote.options.find(option => option.id == decodeData.vote.optionId)
+                if (option) { option.voted.push(decodeData.user); }
+            }
+        }
+    })
+
+
+    result = Object.values(result)
+
+    result = result.filter(item => {
+        return JSON.stringify(item).includes(text)
+    })
+    return Promise.resolve(result)
 }
 
 const createVote = async (userId, privateKey, vote) => {
@@ -124,6 +159,7 @@ const checkVoteValid = (vote, type) => {
         if (!vote.topic) throw "MISSING TOPIC"
         if ([null, undefined].includes(vote.fromDate)) throw "MISSING FROM_DATE"
         if ([null, undefined].includes(vote.toDate)) throw "MISSING TO_DATE"
+        if (vote.fromDate >= vote.toDate) throw "FromDate must less than ToDate"
         if (!vote.voters || (!Array.isArray(vote.voters) && vote.voters != "all")) throw "INVALID VOTERS"
     }
 
@@ -143,6 +179,7 @@ const checkVoteValid = (vote, type) => {
 }
 
 module.exports = {
+    getVotesByText,
     getVotes,
     getVote,
     createVote,

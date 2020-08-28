@@ -16,7 +16,7 @@ class VoteDetailContainer extends Component {
             voteId: this.props.match.params.id
         }
 
-        this.elect=this.elect.bind(this)
+        this.elect = this.elect.bind(this)
 
     }
     componentDidMount() {
@@ -39,6 +39,8 @@ class VoteDetailContainer extends Component {
             vote,
             privateKey
         }
+
+        let thiz = this
         api
             .post("api/votes/elect", postBody)
             .then(res => {
@@ -50,12 +52,17 @@ class VoteDetailContainer extends Component {
                             break;
                         }
                     }
-                    this.props.pending(false)
+
+                    thiz.props.pending(false)
+
                     return;
                 }
 
-                this.props.pending(false)
-                this.props.showSuccessNotify("Voted successfully!")
+                setTimeout(() => {
+                    thiz.getVote(vote.voteId)
+                    thiz.props.pending(false)
+                    thiz.props.showSuccessNotify("Voted successfully!")
+                }, 500)
 
             })
             .catch(err => {

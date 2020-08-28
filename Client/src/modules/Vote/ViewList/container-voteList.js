@@ -32,7 +32,25 @@ class VoteListContainer extends Component {
         const userId = JSON.parse(localStorage.getItem("user")).userId
         const api = axios.create({ baseURL: config.URL });
         if (text) {
-            console.log("text",text)
+            api
+                .get("api/votes/by/text-search?text=" + encodeURIComponent(text))
+                .then(res => {
+                    console.log(res);
+                    if (res.data.status === "fail") {
+                        switch (res.data.code) {
+                            default: {
+                                this.props.showFailNotify(res.data.msg);
+                                break;
+                            }
+                        }
+                        return;
+                    }
+
+                    this.props.updateVotes(res.data.result)
+                })
+                .catch(err => {
+                    this.props.showAlertNotify("An error has happened when login:\n" + err);
+                });
         } else {
             api
                 .get("api/votes?userId=" + encodeURIComponent(userId))
@@ -56,6 +74,7 @@ class VoteListContainer extends Component {
         }
 
     }
+
 }
 
 //map state to props

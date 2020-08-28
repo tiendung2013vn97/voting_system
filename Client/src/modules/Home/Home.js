@@ -68,7 +68,7 @@ class Home extends Component {
   }
 
   handleLogin() {
-    let userId = document.getElementById("userid").value
+    let userId = document.getElementById("userid").value.trim()
     let privateKey = document.getElementById("private-key").value
     // privateKey=JSON.stringify(privateKey)
     this.props.login({ userId, privateKey })

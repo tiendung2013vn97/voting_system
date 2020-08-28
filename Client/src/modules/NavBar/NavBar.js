@@ -48,6 +48,9 @@ class NavBar extends Component {
                 >
                     <Button onClick={this.logOut.bind(this)}>Log out</Button>
                 </Popover>
+
+
+                
             </div>)
         }
 

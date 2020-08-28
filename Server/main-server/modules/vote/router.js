@@ -17,6 +17,13 @@ router.get("/:voteId", (req, res, next) => {
     return res.json(suc(handler.getVote(req.params.voteId)))
 })
 
+router.get("/by/text-search", (req, res, next) => {
+    return handler.getVotesByText(req.query.text)
+        .then(val => res.json(suc(val)))
+        .catch(err => res.json(fail(err)))
+})
+
+
 
 /**
  * Create new vote
